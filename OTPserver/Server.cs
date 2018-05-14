@@ -11,14 +11,18 @@ namespace OTPserver
 
     public class Server
     {
-        class HandleClient
+        public class HandleClient
         {
+            public const byte SET_MODE= 0;
+
             /// <summary>
             /// private attribute of HandleClient class
             /// </summary>
             private TcpClient mTcpClient;
             private DataBaseUnit dbmodel;
             private PacketSlice pslicer;
+            private LoginMode mode;
+            public bool shutdown = false;
             /// <summary>
             /// Constructor
             /// </summary>
@@ -54,11 +58,29 @@ namespace OTPserver
                     //string msg = cb.ReceiveMsg(this.mTcpClient);
                     Console.WriteLine("等待命令中");
                     TransModule postman = new TransModule(mTcpClient, pslicer);
+                    while (!shutdown) { 
                     List<PacketSlice.Order> orders = postman.waitForOrder();
                     Console.WriteLine("来自客户端 "+mTcpClient+"的命令:");
-                    foreach(PacketSlice.Order o in orders)
-                    {
-                        Console.WriteLine(o.order+ ":"+o.data + "\n");
+                        foreach (PacketSlice.Order o in orders)
+                        {
+                            Console.WriteLine(o.order + ":" + o.data + "\n");
+                            switch (orders[0].order) {
+                                case SET_MODE:
+                                    {
+                                        switch ((int)orders[0].data)
+                                        {
+                                            case 0:{
+                                                    mode = new OCRAmode(this.);
+                                                    break;
+                                                }
+
+
+                                        }
+                                        break;
+                                    }
+                            }
+
+                        }
                     }
                     //cb.SendMsg("主機回傳測試", this.mTcpClient);
                 }

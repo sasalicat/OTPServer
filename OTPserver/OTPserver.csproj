@@ -49,6 +49,8 @@
   <ItemGroup>
     <Compile Include="CommunicationBase.cs" />
     <Compile Include="DataBaseUnit.cs" />
+    <Compile Include="LoginMode.cs" />
+    <Compile Include="OCRAmode.cs" />
     <Compile Include="PacketSlice.cs" />
     <Compile Include="Program.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />

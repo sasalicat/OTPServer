@@ -8,7 +8,7 @@ using System.Threading.Tasks;
 namespace OTPserver
 {
 
-    class PacketSlice
+    public class PacketSlice
     {
         public const sbyte STRING = 0;
         public const sbyte INT = 1;
