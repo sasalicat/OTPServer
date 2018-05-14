@@ -35,12 +35,32 @@ namespace OTPserver
             /// </summary>
             public void Communicate()
             {
-                try
+                /*try
                 {
                     CommunicationBase cb = new CommunicationBase();
                     string msg = cb.ReceiveMsg(this.mTcpClient);
                     Console.WriteLine(msg + "\n");
                     cb.SendMsg("主機回傳測試", this.mTcpClient);
+                }
+                catch
+                {
+                    Console.WriteLine("客戶端強制關閉連線!");
+                    this.mTcpClient.Close();
+                    Console.Read();
+                }*/
+                try
+                {
+                    //CommunicationBase cb = new CommunicationBase();
+                    //string msg = cb.ReceiveMsg(this.mTcpClient);
+                    Console.WriteLine("等待命令中");
+                    TransModule postman = new TransModule(mTcpClient, pslicer);
+                    List<PacketSlice.Order> orders = postman.waitForOrder();
+                    Console.WriteLine("来自客户端 "+mTcpClient+"的命令:");
+                    foreach(PacketSlice.Order o in orders)
+                    {
+                        Console.WriteLine(o.order+ ":"+o.data + "\n");
+                    }
+                    //cb.SendMsg("主機回傳測試", this.mTcpClient);
                 }
                 catch
                 {

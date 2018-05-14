@@ -6,3 +6,11 @@ G:\C# workplace\OTPserver\OTPserver\bin\Debug\Google.Protobuf.dll
 G:\C# workplace\OTPserver\OTPserver\obj\Debug\OTPserver.csprojResolveAssemblyReference.cache
 G:\C# workplace\OTPserver\OTPserver\obj\Debug\OTPserver.exe
 G:\C# workplace\OTPserver\OTPserver\obj\Debug\OTPserver.pdb
+G:\C# workplace\gitProject\OTPserver\bin\Debug\OTPserver.exe.config
+G:\C# workplace\gitProject\OTPserver\obj\Debug\OTPserver.exe
+G:\C# workplace\gitProject\OTPserver\obj\Debug\OTPserver.pdb
+G:\C# workplace\gitProject\OTPserver\bin\Debug\OTPserver.exe
+G:\C# workplace\gitProject\OTPserver\bin\Debug\OTPserver.pdb
+G:\C# workplace\gitProject\OTPserver\bin\Debug\MySql.Data.dll
+G:\C# workplace\gitProject\OTPserver\bin\Debug\Google.Protobuf.dll
+G:\C# workplace\gitProject\OTPserver\obj\Debug\OTPserver.csprojResolveAssemblyReference.cache

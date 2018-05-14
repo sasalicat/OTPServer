@@ -22,13 +22,24 @@ namespace OTPserver
         }
         public void sendOrder(byte orderNo,object data)
         {
-            Console.Write("data type is:"+data.GetType());
-            if(data.GetType()==Type.GetType("System.Int32"))
+            if (!stream.CanWrite)
+            {
+                Console.WriteLine("不知道神马原因steam不能write");
+                return;
+            }
+            Console.Write("data type is:" + data.GetType());
+            sbyte typ = slicer.TypeDict[orderNo];
+            if (typ == PacketSlice.INT)
             {
                 byte[] packet = slicer.buildBytes(orderNo, (int)data);
-                stream.Write(packet,0,packet.Length); 
+                stream.Write(packet, 0, packet.Length);
             }
-            
+            else if (typ == PacketSlice.STRING)
+            {
+                byte[] packet = slicer.buildBytes(orderNo, (string)data);
+                stream.Write(packet, 0, packet.Length);
+            }
+
         }
         public List<PacketSlice.Order> waitForOrder()
         {
