@@ -12,7 +12,8 @@ namespace OTPserver
         static void Main(string[] args)
         {
 
-
+            double seconds = DateTime.UtcNow.Subtract(DateTime.Parse("1970-1-1")).TotalSeconds;
+            Console.WriteLine("second:"+seconds);
             Server serverUnit = new Server();
             serverUnit.ListenToConnection();
             /* DataBaseUnit dbunit = new DataBaseUnit();

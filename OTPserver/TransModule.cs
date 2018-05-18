@@ -45,9 +45,19 @@ namespace OTPserver
         {
             int numberOfBytesRead = 0;
             byte[] receiveBytes = new byte[client.ReceiveBufferSize];
+
             do
             {
                 numberOfBytesRead = stream.Read(receiveBytes, 0, client.ReceiveBufferSize);
+                Console.WriteLine("收到封包Len:"+numberOfBytesRead);
+                if (numberOfBytesRead == 0)
+                {
+                    return null;//收到长度为0的封包代表client端shutdown
+                }
+                else
+                {
+                    break;
+                }
             } while (stream.DataAvailable);
             return slicer.SlicePack(receiveBytes, numberOfBytesRead);
         }

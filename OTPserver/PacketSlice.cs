@@ -27,8 +27,15 @@ namespace OTPserver
         public void useDefaultDict()
         {
             TypeDict = new Dictionary<byte, sbyte>();
-            TypeDict[0] = STRING;//意思是0号指令的data是string形态的
-            TypeDict[1] = INT;
+            TypeDict[Server.HandleClient.LOG_ACCOUNT] = STRING;//意思是0号指令的data是string形态的
+            TypeDict[Server.HandleClient.LOGIN] = INT;
+            TypeDict[Server.HandleClient.SET_MODE] = INT;
+            TypeDict[Server.HandleClient.GET_KEY] = INT;
+            TypeDict[Server.HandleClient.C_ERROR] = INT;
+            TypeDict[Server.HandleClient.C_GET_KEY] = INT;
+            TypeDict[Server.HandleClient.C_LOGIN_RESPONSE] = INT;
+            TypeDict[Server.HandleClient.PROOFREAD] = INT;
+            TypeDict[Server.HandleClient.C_PRO_RES] = INT;
         }
         public byte[] buildBytes(byte order, string data)
         {

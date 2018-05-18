@@ -11,25 +11,38 @@ namespace OTPserver
 
     public class Server
     {
+        public static Dictionary<string, LoginMode> modeDict=new Dictionary<string, LoginMode>();
+        public static readonly DateTime origen = new DateTime(2000, 1, 1);
         public class HandleClient
         {
             public const byte SET_MODE= 0;
-
+            public const byte LOG_ACCOUNT = 1;
+            public const byte GET_KEY = 2;
+            public const byte LOGIN = 3;
+            public const byte C_ERROR = 4;
+            public const byte C_GET_KEY = 5;
+            public const byte C_LOGIN_RESPONSE = 6;
+            public const byte PROOFREAD = 7;
+            public const byte C_PRO_RES = 8;
+            //错误编号------------------------
+            public const int E_CANT_GET_KEY=0;
+            public const int E_CANT_FIND_ACCOUNT_HAS_LOG=1;
             /// <summary>
             /// private attribute of HandleClient class
             /// </summary>
             private TcpClient mTcpClient;
-            private DataBaseUnit dbmodel;
+            public DataBaseUnit dbmodel;
             private PacketSlice pslicer;
-            private LoginMode mode;
+            //private LoginMode mode;
+            public string account;
             public bool shutdown = false;
             /// <summary>
             /// Constructor
             /// </summary>
             /// <param name="_tmpTcpClient">傳入TcpClient參數</param>
-            public HandleClient(DataBaseUnit db,PacketSlice slice, TcpClient _tmpTcpClient)
+            public HandleClient(PacketSlice slice, TcpClient _tmpTcpClient)
             {
-                this.dbmodel = db;
+                this.dbmodel = new DataBaseUnit();
                 this.mTcpClient = _tmpTcpClient;
                 this.pslicer = slice;
             }
@@ -56,37 +69,98 @@ namespace OTPserver
                 {
                     //CommunicationBase cb = new CommunicationBase();
                     //string msg = cb.ReceiveMsg(this.mTcpClient);
+                    //Console.WriteLine(dbmodel.getSecondFromOri("asswecan"));
                     Console.WriteLine("等待命令中");
                     TransModule postman = new TransModule(mTcpClient, pslicer);
                     while (!shutdown) { 
-                    List<PacketSlice.Order> orders = postman.waitForOrder();
-                    Console.WriteLine("来自客户端 "+mTcpClient+"的命令:");
-                        foreach (PacketSlice.Order o in orders)
+                        List<PacketSlice.Order> orders = postman.waitForOrder();
+                        if (orders == null)//终止线程
                         {
+                            return;
+                        }
+                        Console.WriteLine("来自客户端 "+mTcpClient+"的命令:"+orders.Count);
+                        while(orders.Count>0)
+                        {
+                            PacketSlice.Order o = orders[0];
                             Console.WriteLine(o.order + ":" + o.data + "\n");
                             switch (orders[0].order) {
+                                case LOG_ACCOUNT:
+                                    {
+                                        account = (string)orders[0].data;
+                                        break;
+                                    }
                                 case SET_MODE:
                                     {
-                                        switch ((int)orders[0].data)
+                                        if (modeDict.ContainsKey(account)&& modeDict[account].no == (int)orders[0].data)
                                         {
-                                            case 0:{
-                                                    mode = new OCRAmode(this.);
-                                                    break;
-                                                }
 
+                                            modeDict[account].onDuplication();
 
+                                        }
+                                        else
+                                        {
+                                            switch ((int)orders[0].data)
+                                            {
+                                                case 0:
+                                                    {//对应帐号创建login接收者
+                                                        Server.modeDict[account] = new OCRAmode(this);
+                                                        break;
+                                                    }
+                                                case 2:
+                                                    {
+                                                        Server.modeDict[account] = new TOTPmode(this);
+                                                        break;
+                                                    }
+                                            }
                                         }
                                         break;
                                     }
+                                case GET_KEY:
+                                    {
+                                        int key = modeDict[account].getKey();
+                                        if (key < 0)
+                                        {//0为client端的error
+                                            postman.sendOrder(C_ERROR, E_CANT_GET_KEY);
+                                        }
+                                        else
+                                        {//1为client端的getKey
+                                            postman.sendOrder(C_GET_KEY, key);
+                                        }
+                                        break;
+                                    }
+                                case LOGIN:
+                                    {
+                                        if (!modeDict.ContainsKey(account))
+                                        {
+                                            postman.sendOrder(C_ERROR,E_CANT_FIND_ACCOUNT_HAS_LOG);
+                                        }
+                                        if (modeDict[account].HandlePassword(orders[0].data))
+                                        {//2为client端的loginResponse
+                                            postman.sendOrder(C_LOGIN_RESPONSE, 1);
+                                        }
+                                        else
+                                        {
+                                            postman.sendOrder(C_LOGIN_RESPONSE, -1);
+                                        }
+                                        break;
+                                    }
+                                case PROOFREAD:
+                                    {
+                                        postman.sendOrder(C_PRO_RES, ((TOTPmode)modeDict[account]).getSecondBetween());
+
+                                        break;
+                                    }
+
                             }
+                            orders.RemoveAt(0);
 
                         }
                     }
                     //cb.SendMsg("主機回傳測試", this.mTcpClient);
                 }
-                catch
+                catch(Exception e)
                 {
-                    Console.WriteLine("客戶端強制關閉連線!");
+                    Console.WriteLine("客戶端強制關閉連線!:"+e);
                     this.mTcpClient.Close();
                     Console.Read();
                 }
@@ -132,7 +206,7 @@ namespace OTPserver
                     if (tmpTcpClient.Connected)
                     {
                         Console.WriteLine("連線成功!");
-                        HandleClient handleClient = new HandleClient(dataBaseModel,packetSlicer,tmpTcpClient);
+                        HandleClient handleClient = new HandleClient(packetSlicer,tmpTcpClient);
                         Thread myThread = new Thread(new ThreadStart(handleClient.Communicate));
                         numberOfClients += 1;
                         myThread.IsBackground = true;
