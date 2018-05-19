@@ -10,7 +10,7 @@ namespace OTPserver
     {
         private int corretPwd = 0;
 
-        public OCRAmode(Server.HandleClient server) : base(server)
+        public OCRAmode(Server.HandleClient server, string account) : base(server,account)
         {
         }
 

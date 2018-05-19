@@ -153,5 +153,15 @@ namespace OTPserver
             cmd.ExecuteNonQuery();
             connection.Close();
         }
+        public void changeCounter(string account,int num)
+        {
+            MySqlConnection connection = new MySqlConnection(connStr);
+            connection.Open();
+            MySqlCommand cmd = connection.CreateCommand();
+            cmd.CommandText = "UPDATE `timeBefore` SET `secondFromOri` = '" + num+ "' WHERE `timeBefore`.`account` = '" + account+"'";
+            Console.WriteLine("開始 addData中的update指令");
+            cmd.ExecuteNonQuery();
+            connection.Close();
+        }
     }
 }

@@ -50,12 +50,14 @@
     <Compile Include="CommunicationBase.cs" />
     <Compile Include="DataBaseUnit.cs" />
     <Compile Include="hashReduceNum.cs" />
+    <Compile Include="HOTPmode.cs" />
     <Compile Include="LoginMode.cs" />
     <Compile Include="OCRAmode.cs" />
     <Compile Include="PacketSlice.cs" />
     <Compile Include="Program.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
     <Compile Include="Server.cs" />
+    <Compile Include="Timer.cs" />
     <Compile Include="ToBytes.cs" />
     <Compile Include="TOTPmode.cs" />
     <Compile Include="TransModule.cs" />

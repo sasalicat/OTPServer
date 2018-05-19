@@ -12,6 +12,7 @@ namespace OTPserver
     public class Server
     {
         public static Dictionary<string, LoginMode> modeDict=new Dictionary<string, LoginMode>();
+        public static Timer mainTimer = new Timer();
         public static readonly DateTime origen = new DateTime(2000, 1, 1);
         public class HandleClient
         {
@@ -24,6 +25,8 @@ namespace OTPserver
             public const byte C_LOGIN_RESPONSE = 6;
             public const byte PROOFREAD = 7;
             public const byte C_PRO_RES = 8;
+            public const byte REQ_COUNT = 9;
+            public const byte C_COUNT_RES = 10;
             //错误编号------------------------
             public const int E_CANT_GET_KEY=0;
             public const int E_CANT_FIND_ACCOUNT_HAS_LOG=1;
@@ -36,15 +39,17 @@ namespace OTPserver
             //private LoginMode mode;
             public string account;
             public bool shutdown = false;
+            public Timer timer;
             /// <summary>
             /// Constructor
             /// </summary>
             /// <param name="_tmpTcpClient">傳入TcpClient參數</param>
-            public HandleClient(PacketSlice slice, TcpClient _tmpTcpClient)
+            public HandleClient(PacketSlice slice, TcpClient _tmpTcpClient,Timer timer)
             {
                 this.dbmodel = new DataBaseUnit();
                 this.mTcpClient = _tmpTcpClient;
                 this.pslicer = slice;
+                this.timer = timer;
             }
 
             /// <summary>
@@ -103,12 +108,17 @@ namespace OTPserver
                                             {
                                                 case 0:
                                                     {//对应帐号创建login接收者
-                                                        Server.modeDict[account] = new OCRAmode(this);
+                                                        Server.modeDict[account] = new OCRAmode(this,account);
+                                                        break;
+                                                    }
+                                                case 1:
+                                                    {
+                                                        Server.modeDict[account] = new HOTPmode(this, account);
                                                         break;
                                                     }
                                                 case 2:
                                                     {
-                                                        Server.modeDict[account] = new TOTPmode(this);
+                                                        Server.modeDict[account] = new TOTPmode(this,account);
                                                         break;
                                                     }
                                             }
@@ -148,6 +158,11 @@ namespace OTPserver
                                     {
                                         postman.sendOrder(C_PRO_RES, ((TOTPmode)modeDict[account]).getSecondBetween());
 
+                                        break;
+                                    }
+                                case REQ_COUNT:
+                                    {
+                                        postman.sendOrder(C_COUNT_RES, ((HOTPmode)modeDict[account]).getCount());
                                         break;
                                     }
 
@@ -206,7 +221,7 @@ namespace OTPserver
                     if (tmpTcpClient.Connected)
                     {
                         Console.WriteLine("連線成功!");
-                        HandleClient handleClient = new HandleClient(packetSlicer,tmpTcpClient);
+                        HandleClient handleClient = new HandleClient(packetSlicer,tmpTcpClient, mainTimer);
                         Thread myThread = new Thread(new ThreadStart(handleClient.Communicate));
                         numberOfClients += 1;
                         myThread.IsBackground = true;

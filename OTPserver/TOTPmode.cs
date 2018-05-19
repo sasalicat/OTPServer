@@ -10,7 +10,7 @@ namespace OTPserver
     {
         public const int WINDOW=20;//每window秒改變一次密碼
 
-        public TOTPmode(Server.HandleClient server) : base(server)
+        public TOTPmode(Server.HandleClient server, string account) : base(server, account)
         {
         }
 

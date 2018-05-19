@@ -36,6 +36,8 @@ namespace OTPserver
             TypeDict[Server.HandleClient.C_LOGIN_RESPONSE] = INT;
             TypeDict[Server.HandleClient.PROOFREAD] = INT;
             TypeDict[Server.HandleClient.C_PRO_RES] = INT;
+            TypeDict[Server.HandleClient.REQ_COUNT] = INT;
+            TypeDict[Server.HandleClient.C_COUNT_RES] = INT;
         }
         public byte[] buildBytes(byte order, string data)
         {
