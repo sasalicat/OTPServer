@@ -29,7 +29,7 @@ namespace OTPserver
         }
         public override bool HandlePassword(object pwd)
         {
-            int time = (DateTime.Now - Server.origen).Seconds;
+            int time =(int) (DateTime.Now - Server.origen).TotalSeconds;
             int ans = time / WINDOW;
             Console.Write("time:"+time+" ans:"+ans);
             Console.WriteLine("pwd is" + pwd + "key is" + hashReduceNum.getNumber(getKey(), ans));
@@ -37,7 +37,7 @@ namespace OTPserver
         }
         public int getSecondBetween()
         {
-            return (DateTime.Now - Server.origen).Seconds;
+            return (int)(DateTime.Now - Server.origen).TotalSeconds;
         }
         public override int no
         {
